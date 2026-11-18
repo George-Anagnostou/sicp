@@ -358,6 +358,127 @@
 
 (cbrt 8)
 
+; 1.2.1 Linear Recursion and Iteration
+
+; n! = n * (n - 1) * (n - 2) ... 3 * 2 * 1
+; n! = n * [(n - 1) * (n - 2) ... 3 * 2 * 1] = n * (n - 1)!
+
+; factorial with linear recursion
+(define (factorial n)
+  (if (= n 1)
+    1
+    (* n (factorial (- n 1)))))
+
+; factorial with iteration
+; The important observation is that we can pass the state
+; of one iteration into the next, without needing to maintain
+; the state of the entire procedure (as with linear recursion)
+; In this case, the state we need to maintain is:
+; product <- counter * product
+; counter <- counter + 1
+(define (factorial n)
+  (fact-iter 1 1 n))
+(define (fact-iter product counter max-count)
+  (if (> counter max-count)
+    product
+    (fact-iter (* counter product)
+               (+ counter 1)
+               max-count)))
+; this could also be defined as
+(define (factorial n)
+  (define (iter product counter)
+    (if (> counter n)
+      product
+      (iter (* counter product)
+            (+ counter 1))))
+  (iter 1 1))
+
+; Exercise 1.10
+; Ackermann's function
+(define (A x y)
+  (cond ((= y 0) 0)
+        ((= x 0) (* 2 y))
+        ((= y 1) 2)
+        (else (A (- x 1) (A x (- y 1))))))
+
+(A 1 10)
+; (A (- 1 1) (A 1 (- 10 1)))
+; (A 0 (A 1 9))
+; (A 0 (A (- 1 1) (A 1 (- 9 1))))
+; (A 0 (A 0 (A 1 8)))
+; (A 0 (A 0 (A (- 1 1) (A 1 (- 8 1)))))
+; (A 0 (A 0 (A 0 (A 1 7))))
+; (A 0 (A 0 (A 0 (A (- 1 1) (A 1 (- 7 1))))))
+; (A 0 (A 0 (A 0 (A 0 (A 1 6)))))
+; (A 0 (A 0 (A 0 (A 0 (A (- 1 1) (A 1 (- 6 1))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 5))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A (-1 1) (A 1 (- 5 1))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 4)))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A (- 1 1) (A 1 (- 4 1)))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 3))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A (- 1 1) (A 1 (- 3 1))))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 2)))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A (- 1 1) (A 1 (- 2 1)))))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 1))))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 2)))))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 2))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 4))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 4))))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 8))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 8))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 16)))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 (* 2 16)))))
+; (A 0 (A 0 (A 0 (A 0 (A 0 32)))))
+; (A 0 (A 0 (A 0 (A 0 (* 2 32)))))
+; (A 0 (A 0 (A 0 (A 0 64)))
+; (A 0 (A 0 (A 0 (* 2 64)))
+; (A 0 (A 0 (A 0 128)))
+; (A 0 (A 0 (* 2 128)))
+; (A 0 (A 0 256))
+; (A 0 (* 2 256))
+; (A 0 512)
+; (* 2 512)
+; 1024
+
+(A 2 4)
+; (A (- 2 1) (A 2 (- 4 1)))
+; (A 1 (A 2 3))
+; (A 1 (A (- 2 1) (A 2 (- 3 1))))
+; (A 1 (A 1 (A 2 2)))
+; (A 1 (A 1 (A (- 2 1) (A 2 (- 2 1)))))
+; (A 1 (A 1 (A 1 (A 2 1))))
+; (A 1 (A 1 (A 1 2)))
+; (A 1 (A 1 (A (- 1 1) (A 1 (- 2 1)))))
+; (A 1 (A 1 (A 0 (A 1 1))))
+; (A 1 (A 1 (A 0 2)))
+; (A 1 (A 1 (* 2 2)))
+; (A 1 (A 1 4))
+; (A 1 (A (- 1 1) (A 1 (- 4 1))))
+; (A 1 (A 0 (A 1 3)))
+; (A 1 (A 0 (A (- 1 1) (A 1 (- 3 1)))))
+; (A 1 (A 0 (A 0 (A 1 2))))
+; (A 1 (A 0 (A 0 (A (- 1 1) (A 1 (- 2 1))))))
+; (A 1 (A 0 (A 0 (A 0 (A 1 1)))))
+; (A 1 (A 0 (A 0 (A 0 2))))
+; (A 1 (A 0 (A 0 (* 2 2)))))
+; (A 1 (A 0 (A 0 4 )))
+; (A 1 (A 0 (* 2 4)))
+; (A 1 (A 0 8))
+; (A 1 (* 2 8))
+; (A 1 16)
+
+(A 3 3)
+
+; Consider the below, where A is Ackermann's function
+(define (f n) (A 0 n))
+(define (g n) (A 1 n))
+(define (h n) (A 2 n))
+(define (k n) (* 5 n n))
+
+; f(n) => 2n
+; g(n) => 2^n since (A 1 n) => (A 0 (A 1 (- n 1))) => (f (g (- n 1)))
+; h(n) => n^2 since (A 2 n) => (A 1 (A 2 (- n 1))) => (g (h (- n 1)))
+; k(n) => 5n^2
 
 ; f(n) recursively
 (define (f n)
