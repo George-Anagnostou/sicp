@@ -480,6 +480,59 @@
 ; h(n) => n^2 since (A 2 n) => (A 1 (A 2 (- n 1))) => (g (h (- n 1)))
 ; k(n) => 5n^2
 
+; 1.2.2 Tree Recursion
+; Fib(n) => {
+;   0 if n = 0,
+;   1 if n = 1,
+;   Fib(n - 1) + Fib(n - 2) otherwise
+; }
+
+; Fibonacci recursively
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+
+; Fibonacci iteratively
+; Fib(1) = 1
+; Fib(0) = 0
+; a <- a + b
+; b <- a
+
+(define (fib n)
+  (fib-iter 1 0 n))
+(define (fib-iter a b count)
+  (if (= count 0 )
+    b
+    (fib-iter (+ a b) a (- count 1))))
+
+; Counting Change
+
+(define (count-change amount) (cc amount 5))
+(define (cc amount kinds-of-coins)
+  (cond ((= amount 0 ) 1)
+        ((or (< amount 0) (= kinds-of-coins 0)) 0)
+        (else (+ (cc amount
+                     (- kinds-of-coins 1))
+                 (cc (- amount
+                        (first-denomination
+                          kinds-of-coins))
+                     kinds-of-coins)))))
+(define (first-denomination kinds-of-coins)
+  (cond ((= kinds-of-coins 1) 1)
+        ((= kinds-of-coins 2) 5)
+        ((= kinds-of-coins 3) 10)
+        ((= kinds-of-coins 4) 25)
+        ((= kinds-of-coins 5) 50)))
+(count-change 292)
+
+; Exercise 1.11
+; f(n) = {
+;   n if n < 3,
+;   f(n - 1) + 2f(n - 2) + 3f(n - 3) if n >= 3
+; }
+
 ; f(n) recursively
 (define (f n)
   (if (< n 3)
@@ -515,3 +568,6 @@
 (pascal 3 1)
 (pascal 3 2)
 (pascal 3 3)
+
+; Exercise 1.13
+
